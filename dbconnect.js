@@ -5,9 +5,9 @@ async function connectToDatabase() {
 
   try {
     connection = await oracledb.getConnection({
-      user: 'YOUR_DATABASE_USER',
-      password: 'YOUR_DATABASE_PASSWORD',
-      connectString: 'localhost/YOUR_DATABASE_SERVICE_NAME'
+      user: '*****',
+      password: '*****',
+      connectString: 'orcl/oracle.ufl.edu'
     });
 
     console.log('Successfully connected to Oracle!');
