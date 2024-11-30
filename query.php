@@ -2,13 +2,10 @@
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $query = $_POST['query'];
 
-    // Database connection details
-    $db_username = 'j.sui';
-    $db_password = 'Q38vOyjmt1DQngytzjMzmMnN';
-    $db_connection_string = 'oracle.cise.ufl.edu/orcl';
-
     // Connect to Oracle database
-    $conn = oci_connect($db_username, $db_password, $db_connection_string);
+    $conn = oci_connect($username = 'j.sui',
+                          $password = 'Q38vOyjmt1DQngytzjMzmMnN',
+                          $connection_string = '//oracle.cise.ufl.edu/orcl');
     if (!$conn) {
         $e = oci_error();
         echo "Connection failed: " . $e['message'];
