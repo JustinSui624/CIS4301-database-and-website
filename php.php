@@ -4,8 +4,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Database connection details
     $db_username = 'j.sui';
-    $db_password = 'your_password';
-    $db_connection_string = 'your_connection_string';
+    $db_password = 'Q38vOyjmt1DQngytzjMzmMnN';
+    $db_connection_string = 'oracle.cise.ufl.edu/orcl';
 
     // Connect to Oracle database
     $conn = oci_connect($db_username, $db_password, $db_connection_string);
