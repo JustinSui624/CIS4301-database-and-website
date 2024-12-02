@@ -5,10 +5,26 @@
 </head>
 <body>
     <h1>Query Database</h1>
-    <form action="https://JustinSui624.github.io/pages/test.php" method="post">
-        <label for="query">Enter your SQL query:</label><br>
-        <textarea id="query" name="query" rows="4" cols="50"></textarea><br><br>
-        <input type="submit" value="Submit">
+   <?php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $query = $_POST['query'];
+
+    // Connect to Oracle database
+    $conn = oci_connect($username = 'j.sui',
+                          $password = 'Q38vOyjmt1DQngytzjMzmMnN',
+                          $connection_string = '//oracle.cise.ufl.edu/orcl');
+if (!$conn) {
+   $m = oci_error();
+   echo $m['message'], "\n";
+   exit;
+}
+else {
+   print "Connected to Oracle!";
+}
+    oci_free_statement($stid);
+    oci_close($conn);
+}
+?>
     </form>
 </body>
 </html>
