@@ -12,12 +12,8 @@ $sql = "SELECT * FROM persons WHERE id = "2003LIDO01";
                           $connection_string = '//oracle.cise.ufl.edu/orcl');
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
-// output data of each row
-while($row = $result->fetch_assoc()) {
-    echo "user_id: " . $row["person_id"]. " - person_id: " . $row["person_first"]. " " . $row["person_last"]. "<br>";
-    $person_id = $row["person_id"];
-    $person_first = $row["person_first"];
-}
+echo $result;
+
 } else {
 echo $sql;
 }
