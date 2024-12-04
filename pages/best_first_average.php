@@ -6,7 +6,7 @@
     <?php 
     include_once 'connect.php';
     
-$sql = "SELECT * FROM `person` WHERE person_id = " .$user_id." ";
+$sql = "SELECT * FROM persons WHERE id = "2003LIDO01";
  $conn = oci_connect($username = 'j.sui',
                           $password = 'Q38vOyjmt1DQngytzjMzmMnN',
                           $connection_string = '//oracle.cise.ufl.edu/orcl');
