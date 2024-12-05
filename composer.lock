@@ -5,13 +5,12 @@
         "This file is @generated automatically"
     ],
     "content-hash": "974acbd93aee2657ed8d29a1fca5b70b",
-    "packages": [
+    "packages": [],
   "require-dev": {
                 "php-coveralls/php-coveralls": "^2.2",
                 "phpunit/phpunit": "^10.1",
                 "vimeo/psalm": "5.16.0"
-    }
-],
+    },
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {},
