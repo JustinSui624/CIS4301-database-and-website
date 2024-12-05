@@ -26,4 +26,4 @@ jobs:
       with:
         php-version: '7.4'
     # This triggers our php file we created before
-    - run: php ./PHPTest.php
+    - run: php ./query.php
