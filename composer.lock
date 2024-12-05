@@ -12,7 +12,7 @@
                 "phpunit/phpunit": "^10.1",
                 "vimeo/psalm": "5.16.0"
             },
-    ],
+    },
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {},
