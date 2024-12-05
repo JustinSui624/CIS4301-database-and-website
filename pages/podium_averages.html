@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podium Averages Over Time</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f1ed;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #e0dedb;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        label, select, button {
+            display: block;
+            margin: 15px 0;
+        }
+        .countries {
+            max-height: 200px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #fff;
+        }
+        .countries label {
+            display: block;
+            margin: 5px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #6a5acd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #5848b1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Podium Averages Over Time</h1>
+        <form method="POST" action="process_podium_averages.php" onsubmit="return validateCountries();">
+            <!-- Event Dropdown -->
+            <label for="event">Select Event:</label>
+            <select name="event" id="event" required>
+                <option value="222">2x2x2 Cube</option>
+                <option value="333">3x3x3 Cube</option>
+                <option value="333bf">3x3x3 Blindfolded</option>
+                <option value="333ft">3x3x3 With Feet</option>
+                <option value="333oh">3x3x3 One-Handed</option>
+                <option value="444">4x4x4 Cube</option>
+                <option value="444bf">4x4x4 Blindfolded</option>
+                <option value="555">5x5x5 Cube</option>
+                <option value="555bf">5x5x5 Blindfolded</option>
+                <option value="666">6x6x6 Cube</option>
+                <option value="777">7x7x7 Cube</option>
+                <option value="clock">Clock</option>
+                <option value="magic">Magic</option>
+                <option value="minx">Megaminx</option>
+                <option value="mmagic">Master Magic</option>
+                <option value="pyram">Pyraminx</option>
+                <option value="skewb">Skewb</option>
+                <option value="sq1">Square-1</option>
+            </select>
+
+            <!-- Country Checkbox Selection -->
+            <label>Select Countries (max 10):</label>
+            <div class="countries">
+                <label><input type="checkbox" name="countries[]" value="Afghanistan"> Afghanistan</label>
+                <label><input type="checkbox" name="countries[]" value="Albania"> Albania</label>
+                <label><input type="checkbox" name="countries[]" value="Algeria"> Algeria</label>
+                <label><input type="checkbox" name="countries[]" value="Andorra"> Andorra</label>
+                <label><input type="checkbox" name="countries[]" value="Angola"> Angola</label>
+                <label><input type="checkbox" name="countries[]" value="Antigua_and_Barbuda"> Antigua and Barbuda</label>
+                <label><input type="checkbox" name="countries[]" value="Argentina"> Argentina</label>
+                <label><input type="checkbox" name="countries[]" value="Armenia"> Armenia</label>
+                <label><input type="checkbox" name="countries[]" value="Australia"> Australia</label>
+                <label><input type="checkbox" name="countries[]" value="Austria"> Austria</label>
+                <label><input type="checkbox" name="countries[]" value="Azerbaijan"> Azerbaijan</label>
+                <label><input type="checkbox" name="countries[]" value="Bahamas"> Bahamas</label>
+                <label><input type="checkbox" name="countries[]" value="Bahrain"> Bahrain</label>
+                <label><input type="checkbox" name="countries[]" value="Bangladesh"> Bangladesh</label>
+                <label><input type="checkbox" name="countries[]" value="Barbados"> Barbados</label>
+                <label><input type="checkbox" name="countries[]" value="Belarus"> Belarus</label>
+                <label><input type="checkbox" name="countries[]" value="Belgium"> Belgium</label>
+                <label><input type="checkbox" name="countries[]" value="Belize"> Belize</label>
+                <label><input type="checkbox" name="countries[]" value="Benin"> Benin</label>
+                <label><input type="checkbox" name="countries[]" value="Bhutan"> Bhutan</label>
+                <label><input type="checkbox" name="countries[]" value="Bolivia"> Bolivia</label>
+                <label><input type="checkbox" name="countries[]" value="Bosnia_and_Herzegovina"> Bosnia and Herzegovina</label>
+                <label><input type="checkbox" name="countries[]" value="Botswana"> Botswana</label>
+                <label><input type="checkbox" name="countries[]" value="Brazil"> Brazil</label>
+                <label><input type="checkbox" name="countries[]" value="Brunei"> Brunei</label>
+                <label><input type="checkbox" name="countries[]" value="Bulgaria"> Bulgaria</label>
+                <label><input type="checkbox" name="countries[]" value="Burkina_Faso"> Burkina Faso</label>
+                <label><input type="checkbox" name="countries[]" value="Burundi"> Burundi</label>
+                <label><input type="checkbox" name="countries[]" value="Cabo_Verde"> Cabo Verde</label>
+                <label><input type="checkbox" name="countries[]" value="Cambodia"> Cambodia</label>
+                <label><input type="checkbox" name="countries[]" value="Cameroon"> Cameroon</label>
+                <label><input type="checkbox" name="countries[]" value="Canada"> Canada</label>
+                <label><input type="checkbox" name="countries[]" value="Central_African_Republic"> Central African Republic</label>
+                <label><input type="checkbox" name="countries[]" value="Chad"> Chad</label>
+                <label><input type="checkbox" name="countries[]" value="Chile"> Chile</label>
+                <label><input type="checkbox" name="countries[]" value="China"> China</label>
+                <label><input type="checkbox" name="countries[]" value="Colombia"> Colombia</label>
+                <label><input type="checkbox" name="countries[]" value="Comoros"> Comoros</label>
+                <label><input type="checkbox" name="countries[]" value="Congo"> Congo</label>
+                <label><input type="checkbox" name="countries[]" value="Costa_Rica"> Costa Rica</label>
+                <label><input type="checkbox" name="countries[]" value="Côte_d'Ivoire"> Côte d'Ivoire</label>
+                <label><input type="checkbox" name="countries[]" value="Croatia"> Croatia</label>
+                <label><input type="checkbox" name="countries[]" value="Cuba"> Cuba</label>
+                <label><input type="checkbox" name="countries[]" value="Cyprus"> Cyprus</label>
+                <label><input type="checkbox" name="countries[]" value="Czech_Republic"> Czech Republic</label>
+                <label><input type="checkbox" name="countries[]" value="Democratic_People's_Republic_of_Korea"> Democratic People's Republic of Korea</label>
+                <label><input type="checkbox" name="countries[]" value="Democratic_Republic_of_the_Congo"> Democratic Republic of the Congo</label>
+                <label><input type="checkbox" name="countries[]" value="Denmark"> Denmark</label>
+                <label><input type="checkbox" name="countries[]" value="Djibouti"> Djibouti</label>
+                <label><input type="checkbox" name="countries[]" value="Dominica"> Dominica</label>
+                <label><input type="checkbox" name="countries[]" value="Dominican_Republic"> Dominican Republic</label>
+                <label><input type="checkbox" name="countries[]" value="Ecuador"> Ecuador</label>
+                <label><input type="checkbox" name="countries[]" value="Egypt"> Egypt</label>
+                <label><input type="checkbox" name="countries[]" value="El_Salvador"> El Salvador</label>
+                <label><input type="checkbox" name="countries[]" value="Equatorial_Guinea"> Equatorial Guinea</label>
+                <label><input type="checkbox" name="countries[]" value="Eritrea"> Eritrea</label>
+                <label><input type="checkbox" name="countries[]" value="Estonia"> Estonia</label>
+                <label><input type="checkbox" name="countries[]" value="Eswatini"> Eswatini</label>
+                <label><input type="checkbox" name="countries[]" value="Ethiopia"> Ethiopia</label>
+                <label><input type="checkbox" name="countries[]" value="Federated_States_of_Micronesia"> Federated States of Micronesia</label>
+                <label><input type="checkbox" name="countries[]" value="Fiji"> Fiji</label>
+                <label><input type="checkbox" name="countries[]" value="Finland"> Finland</label>
+                <label><input type="checkbox" name="countries[]" value="France"> France</label>
+                <label><input type="checkbox" name="countries[]" value="Gabon"> Gabon</label>
+                <label><input type="checkbox" name="countries[]" value="Gambia"> Gambia</label>
+                <label><input type="checkbox" name="countries[]" value="Georgia"> Georgia</label>
+                <label><input type="checkbox" name="countries[]" value="Germany"> Germany</label>
+                <label><input type="checkbox" name="countries[]" value="Ghana"> Ghana</label>
+                <label><input type="checkbox" name="countries[]" value="Greece"> Greece</label>
+                <label><input type="checkbox" name="countries[]" value="Grenada"> Grenada</label>
+                <label><input type="checkbox" name="countries[]" value="Guatemala"> Guatemala</label>
+                <label><input type="checkbox" name="countries[]" value="Guinea"> Guinea</label>
+                <label><input type="checkbox" name="countries[]" value="Guinea_Bissau"> Guinea Bissau</label>
+                <label><input type="checkbox" name="countries[]" value="Guyana"> Guyana</label>
+                <label><input type="checkbox" name="countries[]" value="Haiti"> Haiti</label>
+                <label><input type="checkbox" name="countries[]" value="Honduras"> Honduras</label>
+                <label><input type="checkbox" name="countries[]" value="Hong_Kong,_China"> Hong Kong, China</label>
+                <label><input type="checkbox" name="countries[]" value="Hungary"> Hungary</label>
+                <label><input type="checkbox" name="countries[]" value="Iceland"> Iceland</label>
+                <label><input type="checkbox" name="countries[]" value="India"> India</label>
+                <label><input type="checkbox" name="countries[]" value="Indonesia"> Indonesia</label>
+                <label><input type="checkbox" name="countries[]" value="Iran"> Iran</label>
+                <label><input type="checkbox" name="countries[]" value="Iraq"> Iraq</label>
+                <label><input type="checkbox" name="countries[]" value="Ireland"> Ireland</label>
+                <label><input type="checkbox" name="countries[]" value="Israel"> Israel</label>
+                <label><input type="checkbox" name="countries[]" value="Italy"> Italy</label>
+                <label><input type="checkbox" name="countries[]" value="Jamaica"> Jamaica</label>
+                <label><input type="checkbox" name="countries[]" value="Japan"> Japan</label>
+                <label><input type="checkbox" name="countries[]" value="Jordan"> Jordan</label>
+                <label><input type="checkbox" name="countries[]" value="Kazakhstan"> Kazakhstan</label>
+                <label><input type="checkbox" name="countries[]" value="Kenya"> Kenya</label>
+                <label><input type="checkbox" name="countries[]" value="Kiribati"> Kiribati</label>
+                <label><input type="checkbox" name="countries[]" value="Republic_of_Korea"> Republic of Korea</label>
+                <label><input type="checkbox" name="countries[]" value="Kosovo"> Kosovo</label>
+                <label><input type="checkbox" name="countries[]" value="Kuwait"> Kuwait</label>
+                <label><input type="checkbox" name="countries[]" value="Kyrgyzstan"> Kyrgyzstan</label>
+                <label><input type="checkbox" name="countries[]" value="Laos"> Laos</label>
+                <label><input type="checkbox" name="countries[]" value="Latvia"> Latvia</label>
+                <label><input type="checkbox" name="countries[]" value="Lebanon"> Lebanon</label>
+                <label><input type="checkbox" name="countries[]" value="Lesotho"> Lesotho</label>
+                <label><input type="checkbox" name="countries[]" value="Liberia"> Liberia</label>
+                <label><input type="checkbox" name="countries[]" value="Libya"> Libya</label>
+                <label><input type="checkbox" name="countries[]" value="Liechtenstein"> Liechtenstein</label>
+                <label><input type="checkbox" name="countries[]" value="Lithuania"> Lithuania</label>
+                <label><input type="checkbox" name="countries[]" value="Luxembourg"> Luxembourg</label>
+                <label><input type="checkbox" name="countries[]" value="Macau,_China"> Macau, China</label>
+                <label><input type="checkbox" name="countries[]" value="Madagascar"> Madagascar</label>
+                <label><input type="checkbox" name="countries[]" value="Malawi"> Malawi</label>
+                <label><input type="checkbox" name="countries[]" value="Malaysia"> Malaysia</label>
+                <label><input type="checkbox" name="countries[]" value="Maldives"> Maldives</label>
+                <label><input type="checkbox" name="countries[]" value="Mali"> Mali</label>
+                <label><input type="checkbox" name="countries[]" value="Malta"> Malta</label>
+                <label><input type="checkbox" name="countries[]" value="Marshall_Islands"> Marshall Islands</label>
+                <label><input type="checkbox" name="countries[]" value="Mauritania"> Mauritania</label>
+                <label><input type="checkbox" name="countries[]" value="Mauritius"> Mauritius</label>
+                <label><input type="checkbox" name="countries[]" value="Mexico"> Mexico</label>
+                <label><input type="checkbox" name="countries[]" value="Moldova"> Moldova</label>
+                <label><input type="checkbox" name="countries[]" value="Monaco"> Monaco</label>
+                <label><input type="checkbox" name="countries[]" value="Mongolia"> Mongolia</label>
+                <label><input type="checkbox" name="countries[]" value="Montenegro"> Montenegro</label>
+                <label><input type="checkbox" name="countries[]" value="Morocco"> Morocco</label>
+                <label><input type="checkbox" name="countries[]" value="Mozambique"> Mozambique</label>
+                <label><input type="checkbox" name="countries[]" value="Myanmar"> Myanmar</label>
+                <label><input type="checkbox" name="countries[]" value="Namibia"> Namibia</label>
+                <label><input type="checkbox" name="countries[]" value="Nauru"> Nauru</label>
+                <label><input type="checkbox" name="countries[]" value="Nepal"> Nepal</label>
+                <label><input type="checkbox" name="countries[]" value="Netherlands"> Netherlands</label>
+                <label><input type="checkbox" name="countries[]" value="New_Zealand"> New Zealand</label>
+                <label><input type="checkbox" name="countries[]" value="Nicaragua"> Nicaragua</label>
+                <label><input type="checkbox" name="countries[]" value="Niger"> Niger</label>
+                <label><input type="checkbox" name="countries[]" value="Nigeria"> Nigeria</label>
+                <label><input type="checkbox" name="countries[]" value="North_Macedonia"> North Macedonia</label>
+                <label><input type="checkbox" name="countries[]" value="Norway"> Norway</label>
+                <label><input type="checkbox" name="countries[]" value="Oman"> Oman</label>
+                <label><input type="checkbox" name="countries[]" value="Pakistan"> Pakistan</label>
+                <label><input type="checkbox" name="countries[]" value="Palau"> Palau</label>
+                <label><input type="checkbox" name="countries[]" value="Palestine"> Palestine</label>
+                <label><input type="checkbox" name="countries[]" value="Panama"> Panama</label>
+                <label><input type="checkbox" name="countries[]" value="Papua_New_Guinea"> Papua New Guinea</label>
+                <label><input type="checkbox" name="countries[]" value="Paraguay"> Paraguay</label>
+                <label><input type="checkbox" name="countries[]" value="Peru"> Peru</label>
+                <label><input type="checkbox" name="countries[]" value="Philippines"> Philippines</label>
+                <label><input type="checkbox" name="countries[]" value="Poland"> Poland</label>
+                <label><input type="checkbox" name="countries[]" value="Portugal"> Portugal</label>
+                <label><input type="checkbox" name="countries[]" value="Qatar"> Qatar</label>
+                <label><input type="checkbox" name="countries[]" value="Romania"> Romania</label>
+                <label><input type="checkbox" name="countries[]" value="Russia"> Russia</label>
+                <label><input type="checkbox" name="countries[]" value="Rwanda"> Rwanda</label>
+                <label><input type="checkbox" name="countries[]" value="Saint_Kitts_and_Nevis"> Saint Kitts and Nevis</label>
+                <label><input type="checkbox" name="countries[]" value="Saint_Lucia"> Saint Lucia</label>
+                <label><input type="checkbox" name="countries[]" value="Saint_Vincent_and_the_Grenadines"> Saint Vincent and the Grenadines</label>
+                <label><input type="checkbox" name="countries[]" value="Samoa"> Samoa</label>
+                <label><input type="checkbox" name="countries[]" value="San_Marino"> San Marino</label>
+                <label><input type="checkbox" name="countries[]" value="São_Tomé_and_Príncipe"> São Tomé and Príncipe</label>
+                <label><input type="checkbox" name="countries[]" value="Saudi_Arabia"> Saudi Arabia</label>
+                <label><input type="checkbox" name="countries[]" value="Senegal"> Senegal</label>
+                <label><input type="checkbox" name="countries[]" value="Serbia"> Serbia</label>
+                <label><input type="checkbox" name="countries[]" value="Seychelles"> Seychelles</label>
+                <label><input type="checkbox" name="countries[]" value="Sierra_Leone"> Sierra Leone</label>
+                <label><input type="checkbox" name="countries[]" value="Singapore"> Singapore</label>
+                <label><input type="checkbox" name="countries[]" value="Slovakia"> Slovakia</label>
+                <label><input type="checkbox" name="countries[]" value="Slovenia"> Slovenia</label>
+                <label><input type="checkbox" name="countries[]" value="Solomon_Islands"> Solomon Islands</label>
+                <label><input type="checkbox" name="countries[]" value="Somalia"> Somalia</label>
+                <label><input type="checkbox" name="countries[]" value="South_Africa"> South Africa</label>
+                <label><input type="checkbox" name="countries[]" value="South_Sudan"> South Sudan</label>
+                <label><input type="checkbox" name="countries[]" value="Spain"> Spain</label>
+                <label><input type="checkbox" name="countries[]" value="Sri_Lanka"> Sri Lanka</label>
+                <label><input type="checkbox" name="countries[]" value="Sudan"> Sudan</label>
+                <label><input type="checkbox" name="countries[]" value="Suriname"> Suriname</label>
+                <label><input type="checkbox" name="countries[]" value="Sweden"> Sweden</label>
+                <label><input type="checkbox" name="countries[]" value="Switzerland"> Switzerland</label>
+                <label><input type="checkbox" name="countries[]" value="Syria"> Syria</label>
+                <label><input type="checkbox" name="countries[]" value="Chinese_Taipei"> Chinese Taipei</label>
+                <label><input type="checkbox" name="countries[]" value="Tajikistan"> Tajikistan</label>
+                <label><input type="checkbox" name="countries[]" value="Tanzania"> Tanzania</label>
+                <label><input type="checkbox" name="countries[]" value="Thailand"> Thailand</label>
+                <label><input type="checkbox" name="countries[]" value="Timor_Leste"> Timor-Leste</label>
+                <label><input type="checkbox" name="countries[]" value="Togo"> Togo</label>
+                <label><input type="checkbox" name="countries[]" value="Tonga"> Tonga</label>
+                <label><input type="checkbox" name="countries[]" value="Trinidad_and_Tobago"> Trinidad and Tobago</label>
+                <label><input type="checkbox" name="countries[]" value="Tunisia"> Tunisia</label>
+                <label><input type="checkbox" name="countries[]" value="Turkey"> Turkey</label>
+                <label><input type="checkbox" name="countries[]" value="Turkmenistan"> Turkmenistan</label>
+                <label><input type="checkbox" name="countries[]" value="Tuvalu"> Tuvalu</label>
+                <label><input type="checkbox" name="countries[]" value="Uganda"> Uganda</label>
+                <label><input type="checkbox" name="countries[]" value="Ukraine"> Ukraine</label>
+                <label><input type="checkbox" name="countries[]" value="United_Arab_Emirates"> United Arab Emirates</label>
+                <label><input type="checkbox" name="countries[]" value="United_Kingdom"> United Kingdom</label>
+                <label><input type="checkbox" name="countries[]" value="Uruguay"> Uruguay</label>
+                <label><input type="checkbox" name="countries[]" value="United_States"> United States</label>
+                <label><input type="checkbox" name="countries[]" value="Uzbekistan"> Uzbekistan</label>
+                <label><input type="checkbox" name="countries[]" value="Vanuatu"> Vanuatu</label>
+                <label><input type="checkbox" name="countries[]" value="Vatican_City"> Vatican City</label>
+                <label><input type="checkbox" name="countries[]" value="Venezuela"> Venezuela</label>
+                <label><input type="checkbox" name="countries[]" value="Vietnam"> Vietnam</label>
+                <label><input type="checkbox" name="countries[]" value="Yemen"> Yemen</label>
+                <label><input type="checkbox" name="countries[]" value="Zambia"> Zambia</label>
+                <label><input type="checkbox" name="countries[]" value="Zimbabwe"> Zimbabwe</label>
+
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit">Generate Graph</button>
+        </form>
+    </div>
+
+    <script>
+        function validateCountries() {
+            const checkboxes = document.querySelectorAll('input[name="countries[]"]:checked');
+            if (checkboxes.length > 10) {
+                alert('You can select a maximum of 10 countries.');
+                return false;
+            }
+            if (checkboxes.length === 0) {
+                alert('Please select at least one country.');
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

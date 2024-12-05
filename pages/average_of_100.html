@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WCA Query - Average of 100</title>
+</head>
+<body>
+    <h1>Average of 100</h1>
+
+    <!-- Input Form -->
+    <form method="POST" action="average_of_100.php">
+        <!-- Event Dropdown -->
+        <label for="event">Select Event:</label>
+        <select name="event" id="event" required>
+            <option value="222">2x2x2 Cube</option>
+            <option value="333">3x3x3 Cube</option>
+            <option value="333bf">3x3x3 Blindfolded</option>
+            <option value="333ft">3x3x3 With Feet</option>
+            <option value="333oh">3x3x3 One-Handed</option>
+            <option value="444">4x4x4 Cube</option>
+            <option value="444bf">4x4x4 Blindfolded</option>
+            <option value="555">5x5x5 Cube</option>
+            <option value="555bf">5x5x5 Blindfolded</option>
+            <option value="666">6x6x6 Cube</option>
+            <option value="777">7x7x7 Cube</option>
+            <option value="clock">Clock</option>
+            <option value="magic">Magic</option>
+            <option value="minx">Megaminx</option>
+            <option value="mmagic">Master Magic</option>
+            <option value="pyram">Pyraminx</option>
+            <option value="skewb">Skewb</option>
+            <option value="sq1">Square-1</option>
+        </select>
+        
+
+        <!-- Competitor Input -->
+        <label for="competitor">Competitor ID (Optional):</label>
+        <input type="text" id="competitor" name="competitor" placeholder="Enter Competitor ID">
+
+        <!-- Submit Button -->
+        <button type="submit">Submit Query</button>
+    </form>
+
+    <?php
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $event_id = $_POST['event'];
+        $competitor_id = $_POST['competitor'];
+
+        // Connect to Oracle database
+        $conn = oci_connect(
+            $username = 'j.sui',
+            $password = 'Q38vOyjmt1DQngytzjMzmMnN',
+            $connection_string = '//oracle.cise.ufl.edu/orcl'
+        );
+        
+        if (!$conn) {
+            $m = oci_error();
+            echo "<p>Error connecting to Oracle: " . $m['message'] . "</p>";
+            exit;
+        } else {
+            echo "<p>Connected to Oracle!</p>";
+        }
+
+        // SQL Query
+        $sql = "
+            SELECT 
+                r.personId AS CompetitorID, 
+                AVG(r.average) AS Average100
+            FROM 
+                Results r
+            WHERE 
+                r.eventId = :event_id
+                AND (:competitor_id IS NULL OR r.personId = :competitor_id)
+            GROUP BY 
+                r.personId
+            HAVING 
+                COUNT(r.average) >= 100
+            ORDER BY 
+                Average100 ASC
+            ";
+
+        $stid = oci_parse($conn, $sql);
+        oci_bind_by_name($stid, ':event_id', $event_id);
+        oci_bind_by_name($stid, ':competitor_id', $competitor_id);
+
+        // Execute Query
+        if (!oci_execute($stid)) {
+            $e = oci_error($stid);
+            echo "<p>Error executing query: " . $e['message'] . "</p>";
+        } else {
+            echo "<table border='1'>
+                    <tr>
+                        <th>Competitor ID</th>
+                        <th>Average of 100</th>
+                    </tr>";
+            while ($row = oci_fetch_assoc($stid)) {
+                echo "<tr>
+                        <td>" . htmlspecialchars($row['COMPETITORID']) . "</td>
+                        <td>" . htmlspecialchars($row['AVERAGE100']) . "</td>
+                      </tr>";
+            }
+            echo "</table>";
+        }
+
+        oci_free_statement($stid);
+        oci_close($conn);
+    }
+    ?>
+</body>
+</html>

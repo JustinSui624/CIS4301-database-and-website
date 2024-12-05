@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WCA Trends and Graphs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f1ed;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background-color: #e0dedb;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #6a5acd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #5848b1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WCA Analytical Trends and Graphs</h1>
+        <form action="process_trend.php" method="POST">
+            <label for="trend">Select a Complex Query Trend</label>
+            <select name="trend" id="trend" required>
+                <option value="podium_averages">Podium Averages Over Time</option>
+                <option value="new_competitors_by_country">New Competitors By Country</option>
+                <option value="record_streaks_by_competition">Personal Record Streaks by Competition</option>
+                <option value="non_podium_results">Non-Podium Results by Competition</option>
+                <option value="competitions_by_country">Number of Competitions by Country</option>
+            </select>
+            <br>
+            <button type="submit">View Trend</button>
+        </form>
+    </div>
+</body>
+</html>
