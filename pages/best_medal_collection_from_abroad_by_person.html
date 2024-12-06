@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>Best Medal Collection by Person</title>
+  </head>
+  <body>
+	<h1>Best Medal Collection by Person</h1>
+    <?php 
+    include_once 'connect.php';
+    
+$sql = "SELECT PERSONNAME AS Person, PERSONCOUNTRYID AS Country, COUNT(*) AS MedalCount FROM results WHERE POS <= 3 GROUP BY PERSONNAME, PERSONCOUNTRYID ORDER BY MedalCount DESC";
+ $conn = oci_connect($username = 'j.sui',
+                          $password = 'Q38vOyjmt1DQngytzjMzmMnN',
+                          $connection_string = '//oracle.cise.ufl.edu/orcl');
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
+echo $result;
+
+} else {
+echo $sql;
+}
+$conn->close();
+
+?>
+  </body>
+</html>
