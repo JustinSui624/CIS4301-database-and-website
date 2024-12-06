@@ -4,9 +4,122 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Record Streaks by Competition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f1ed;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #e0dedb;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        label, select, button {
+            display: block;
+            margin: 15px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #6a5acd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #5848b1;
+        }
+    </style>
 </head>
 <body>
-    <h1>Personal Record Streaks by Competition</h1>
-    <p>This page will display the Personal Record Streaks by Competition graph or data analysis.</p>
+    <div class="container">
+        <h1>Personal Record Streaks by Competition</h1>
+        <form method="POST" action="process_top_competitions.php" onsubmit="return validateYears();">
+            <!-- Start Year Dropdown -->
+            <label for="start_year">Select Start Year:</label>
+            <select name="start_year" id="start_year" required>
+                <option value="">-- Select Start Year --</option>
+                <option value="2003">2003</option>
+                <option value="2004">2004</option>
+                <option value="2005">2005</option>
+                <option value="2006">2006</option>
+                <option value="2007">2007</option>
+                <option value="2008">2008</option>
+                <option value="2009">2009</option>
+                <option value="2010">2010</option>
+                <option value="2011">2011</option>
+                <option value="2012">2012</option>
+                <option value="2013">2013</option>
+                <option value="2014">2014</option>
+                <option value="2015">2015</option>
+                <option value="2016">2016</option>
+                <option value="2017">2017</option>
+                <option value="2018">2018</option>
+                <option value="2019">2019</option>
+                <option value="2020">2020</option>
+                <option value="2021">2021</option>
+                <option value="2022">2022</option>
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+            </select>
+
+            <!-- End Year Dropdown -->
+            <label for="end_year">Select End Year:</label>
+            <select name="end_year" id="end_year" required>
+                <option value="">-- Select End Year --</option>
+                <option value="2003">2003</option>
+                <option value="2004">2004</option>
+                <option value="2005">2005</option>
+                <option value="2006">2006</option>
+                <option value="2007">2007</option>
+                <option value="2008">2008</option>
+                <option value="2009">2009</option>
+                <option value="2010">2010</option>
+                <option value="2011">2011</option>
+                <option value="2012">2012</option>
+                <option value="2013">2013</option>
+                <option value="2014">2014</option>
+                <option value="2015">2015</option>
+                <option value="2016">2016</option>
+                <option value="2017">2017</option>
+                <option value="2018">2018</option>
+                <option value="2019">2019</option>
+                <option value="2020">2020</option>
+                <option value="2021">2021</option>
+                <option value="2022">2022</option>
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+            </select>
+
+            <!-- Submit Button -->
+            <button type="submit">Generate Graph</button>
+        </form>
+    </div>
+
+    <script>
+        function validateYears() {
+            const startYear = document.getElementById('start_year').value;
+            const endYear = document.getElementById('end_year').value;
+
+            if (!startYear || !endYear) {
+                alert("Both start year and end year must be selected.");
+                return false;
+            }
+
+            if (parseInt(startYear) > parseInt(endYear)) {
+                alert("Start year must not be greater than end year.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 </body>
 </html>
