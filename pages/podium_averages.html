@@ -48,12 +48,16 @@
             background-color: #5848b1;
         }
     </style>
+
+    <!-- Chart.js CDN Link -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
 </head>
 <body>
     <div class="container">
         <h1>Podium Averages Over Time</h1>
         <form method="POST" action="process_podium_averages.php" onsubmit="return validateCountries();">
-            <!-- Event Dropdown -->
+            <!-- Event options for the user -->
             <label for="event">Select Event:</label>
             <select name="event" id="event" required>
                 <option value="222">2x2x2 Cube</option>
@@ -76,7 +80,7 @@
                 <option value="sq1">Square-1</option>
             </select>
 
-            <!-- Country Checkbox Selection -->
+            <!--Country selection options for the user-->
             <label>Select Countries (max 10):</label>
             <div class="countries">
                 <label><input type="checkbox" name="countries[]" value="Afghanistan"> Afghanistan</label>
@@ -281,7 +285,7 @@
 
             </div>
 
-            <!-- Submit Button -->
+            <!-- button to submit and generate graph -->
             <button type="submit">Generate Graph</button>
         </form>
     </div>
