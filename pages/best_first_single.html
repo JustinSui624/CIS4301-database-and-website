@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <title>Best First Singles</title>
+  </head>
+  <body>
+    <?php 
+    include_once 'connect.php';
+    
+$sql = "SELECT p.name, p.gender, p.countryid AS "COUNTRY", e.name AS "EVENT", r.best AS "BEST TIME" FROM RanksSingle r, persons p, events e WHERE r.worldrank = 1 AND e.id = r.eventid AND r.personid = p.id";
+ $conn = oci_connect($username = 'j.sui',
+                          $password = 'Q38vOyjmt1DQngytzjMzmMnN',
+                          $connection_string = '//oracle.cise.ufl.edu/orcl');
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
+echo $result;
+
+} else {
+echo $sql;
+}
+$conn->close();
+
+?>
+  </body>
+</html>
