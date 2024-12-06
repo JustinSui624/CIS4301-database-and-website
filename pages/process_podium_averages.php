@@ -1,5 +1,5 @@
 <?php
-// Enable error reporting for debugging purposes
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <canvas id="podiumChart" width="400" height="200"></canvas>
     <script>
         var ctx = document.getElementById('podiumChart').getContext('2d');
-        
+
         var podiumChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -110,6 +110,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 datasets: [
                     <?php 
                     $uniqueCountries = array_unique($countries);  // Get unique countries
+
+                    function getRandomColor() {
+                        // Generate a random RGB color
+                        $r = rand(0, 255);
+                        $g = rand(0, 255);
+                        $b = rand(0, 255);
+                        return "rgba($r, $g, $b, 1)";  // Return color in RGBA format
+                    }
+
                     foreach ($uniqueCountries as $country) {
                         echo "{ 
                             label: '$country',
@@ -125,9 +134,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         }
 
                         echo implode(',', $countryData) . "],
-                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderColor: '" . getRandomColor() . "', 
                         fill: false
-                    },";
+                    },"; 
                     } 
                     ?>
                 ]
