@@ -67,11 +67,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $chartData = [];
     $years = [];
     $countries = [];
+    
+    // Fetch results and prepare for charting
     while ($row = oci_fetch_assoc($stid)) {
         $chartData[] = $row['PODIUM_AVERAGE'];  // Podium average
         $years[] = $row['YEAR'];  // Year
         $countries[] = $row['COUNTRY'];  // Country
     }
+
+    // Get unique years for the x-axis
+    $uniqueYears = array_unique($years);
+    sort($uniqueYears); // Sorting years in ascending order
 
     // Free the statement and close the connection
     oci_free_statement($stid);
@@ -96,23 +102,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <canvas id="podiumChart" width="400" height="200"></canvas>
     <script>
         var ctx = document.getElementById('podiumChart').getContext('2d');
+        
         var podiumChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: <?php echo json_encode($years); ?>,  // X-axis: Year data from PHP
+                labels: <?php echo json_encode($uniqueYears); ?>,  // X-axis: Unique years
                 datasets: [
                     <?php 
-                    $uniqueCountries = array_unique($countries);  // Ensure we get only unique countries for multiple lines
+                    $uniqueCountries = array_unique($countries);  // Get unique countries
                     foreach ($uniqueCountries as $country) {
                         echo "{ 
                             label: '$country',
                             data: [";
+                        
+                        // Prepare data for the country
                         $countryData = [];
-                        foreach ($countries as $key => $c) {
-                            if ($c == $country) {
-                                $countryData[] = $chartData[$key];  // Only push data for the current country
+                        foreach ($years as $index => $year) {
+                            if ($countries[$index] == $country) {
+                                // Push corresponding podium averages for each country
+                                $countryData[] = $chartData[$index];
                             }
                         }
+
                         echo implode(',', $countryData) . "],
                         borderColor: 'rgba(75, 192, 192, 1)',
                         fill: false
@@ -149,6 +160,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         });
     </script>
+
+    <!-- Display the query results in a table -->
+    <h2>Query Results</h2>
+    <table border="1">
+        <tr>
+            <th>Country</th>
+            <th>Year</th>
+            <th>Podium Average</th>
+        </tr>
+        <?php foreach ($years as $index => $year): ?>
+            <tr>
+                <td><?php echo htmlspecialchars($countries[$index]); ?></td>
+                <td><?php echo htmlspecialchars($year); ?></td>
+                <td><?php echo htmlspecialchars($chartData[$index]); ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
 
 </body>
 </html>
