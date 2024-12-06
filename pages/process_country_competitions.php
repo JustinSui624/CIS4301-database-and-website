@@ -98,6 +98,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 datasets: [
                     <?php 
                     $uniqueCountries = array_unique($countries);  // Ensure we get only unique countries for multiple lines
+
+                    function getRandomColor() {
+                        // Generate a random RGB color
+                        $r = rand(0, 255);
+                        $g = rand(0, 255);
+                        $b = rand(0, 255);
+                        return "rgba($r, $g, $b, 1)";  // Return color in RGBA format
+                    }
+
                     foreach ($uniqueCountries as $country) {
                         echo "{ 
                             label: '$country',
@@ -109,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             }
                         }
                         echo implode(',', $countryData) . "],
-                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderColor: '" . getRandomColor() . "',
                         fill: false
                     },";
                     } 
@@ -147,4 +156,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 </body>
 </html>
-
