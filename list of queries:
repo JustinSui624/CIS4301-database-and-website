@@ -122,4 +122,69 @@ ORDER BY days_to_complete_all_events ASC
 FETCH FIRST 40 ROWS ONLY;
 
 shortest_time_to_get_all_singles_and_averages:
+WITH valid_events AS (
+    SELECT id AS event_id
+    FROM Events
+    WHERE rank < 900 AND id NOT IN ('magic', 'mmagic', '333ft', '333mbf')
+),
+all_events_people AS (
+    -- Identify people with single and average results in every valid event
+    SELECT single.personId
+    FROM RanksSingle single
+    JOIN RanksAverage avg 
+        ON single.personId = avg.personId 
+       AND single.eventId = avg.eventId
+       AND single.eventId NOT IN ('333mbf') -- Exclude multi-blind here
+    WHERE single.eventId IN (SELECT event_id FROM valid_events)
+    GROUP BY single.personId
+    HAVING COUNT(single.eventId) = (SELECT COUNT(*) FROM valid_events)
+),
+person_results AS (
+    -- Retrieve results for people who have completed all events
+    SELECT
+        result.personId,
+        '[' || person.name || '](https://www.worldcubeassociation.org/persons/' || person.id || ')' AS person_link,
+        result.eventId,
+        TO_DATE(competition.year || '-' || competition.month || '-' || competition.day, 'YYYY-MM-DD') AS result_date
+    FROM Results result
+    JOIN Persons person ON person.id = result.personId AND person.subId = 1
+    JOIN Competitions competition ON competition.id = result.competitionId
+    WHERE result.personId IN (SELECT personId FROM all_events_people)
+      AND result.eventId NOT IN ('333mbf') -- Exclude multi-blind here as well
+),
+first_result AS (
+    -- Find the date of the first recorded result for each person
+    SELECT
+        personId,
+        person_link,
+        MIN(result_date) AS first_competition_date
+    FROM person_results
+    GROUP BY personId, person_link
+),
+last_missing_event_result AS (
+    -- Find the date of the last event's first result (completing all events) for each person
+    SELECT
+        personId,
+        MAX(result_date) AS last_event_completion_date
+    FROM (
+        SELECT
+            personId,
+            eventId,
+            MIN(result_date) AS result_date
+        FROM person_results
+        GROUP BY personId, eventId
+    )
+    GROUP BY personId
+)
+-- Calculate the time difference and order the results
+SELECT
+    first_result.person_link,
+    first_result.first_competition_date,
+    last_missing_event_result.last_event_completion_date,
+    last_missing_event_result.last_event_completion_date - first_result.first_competition_date AS days_to_complete_all_events
+FROM first_result
+JOIN last_missing_event_result ON first_result.personId = last_missing_event_result.personId
+ORDER BY days_to_complete_all_events ASC
+FETCH FIRST 40 ROWS ONLY;
 
+world_championship_records:
