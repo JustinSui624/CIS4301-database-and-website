@@ -61,3 +61,65 @@ JOIN Persons person
     AND person.subId = 1
 ORDER BY attended_within_week DESC, person.name;
 
+shortest_time_to_get_all_singles:
+WITH all_events_people AS (
+    -- Identify people with results in every official event (excluding Magic, Master Magic, and Feet)
+    SELECT personId
+    FROM RanksSingle
+    JOIN Events event ON event.id = eventId
+    WHERE event.rank < 900
+      AND event.id NOT IN ('magic', 'mmagic', '333ft')
+    GROUP BY personId
+    HAVING COUNT(eventId) = (SELECT COUNT(*) 
+                             FROM Events 
+                             WHERE rank < 900 AND id NOT IN ('magic', 'mmagic', '333ft'))
+),
+person_results AS (
+    -- Retrieve results for people who have completed all events
+    SELECT
+        result.personId,
+        '[' || person.name || '](https://www.worldcubeassociation.org/persons/' || person.id || ')' AS person_link,
+        result.eventId,
+        TO_DATE(competition.year || '-' || competition.month || '-' || competition.day, 'YYYY-MM-DD') AS result_date
+    FROM Results result
+    JOIN Persons person ON person.id = result.personId AND person.subId = 1
+    JOIN Competitions competition ON competition.id = result.competitionId
+    WHERE result.personId IN (SELECT personId FROM all_events_people)
+),
+first_result AS (
+    -- Find the date of the first recorded result for each person
+    SELECT
+        personId,
+        person_link,
+        MIN(result_date) AS first_competition_date
+    FROM person_results
+    GROUP BY personId, person_link
+),
+last_missing_event_result AS (
+    -- Find the date of the last event's first result (completing all events) for each person
+    SELECT
+        personId,
+        MAX(result_date) AS last_event_completion_date
+    FROM (
+        SELECT
+            personId,
+            eventId,
+            MIN(result_date) AS result_date
+        FROM person_results
+        GROUP BY personId, eventId
+    )
+    GROUP BY personId
+)
+-- Calculate the time difference and order the results
+SELECT
+    first_result.person_link,
+    first_result.first_competition_date,
+    last_missing_event_result.last_event_completion_date,
+    last_missing_event_result.last_event_completion_date - first_result.first_competition_date AS days_to_complete_all_events
+FROM first_result
+JOIN last_missing_event_result ON first_result.personId = last_missing_event_result.personId
+ORDER BY days_to_complete_all_events ASC
+FETCH FIRST 40 ROWS ONLY;
+
+shortest_time_to_get_all_singles_and_averages:
+
