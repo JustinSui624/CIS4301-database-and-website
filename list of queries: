@@ -451,3 +451,52 @@ WHERE row_num = 1  -- Select only the first result for each person in each event
 ORDER BY event_id, best
 FETCH FIRST 100 ROWS ONLY;
 
+longest_standing_records:
+WITH latest_records AS (
+    SELECT
+        result.eventId AS event_id,
+        result.regionalSingleRecord AS regional_single_record,
+        result.regionalAverageRecord AS regional_average_record,
+        result.best AS single,
+        result.average,
+        person.id AS person_id,
+        person.name AS person_name,
+        competition.cellName AS competition_name,
+        competition.year AS competition_year,
+        competition.month AS competition_month,
+        competition.day AS competition_day,
+        TO_DATE(competition.year || '-' || competition.month || '-' || competition.day, 'YYYY-MM-DD') AS competition_date,
+        continent.name AS continent_name
+    FROM Results result
+    JOIN Persons person ON person.id = result.personId AND person.subId = 1
+    JOIN Competitions competition ON competition.id = result.competitionId
+    JOIN Countries country ON country.id = result.personcountryId
+    JOIN Continents continent ON continent.id = country.continentId
+    WHERE (result.regionalSingleRecord IN ('AfR', 'AsR', 'ER', 'NAR', 'OcR', 'SAR', 'WR')
+       OR result.regionalAverageRecord IN ('AfR', 'AsR', 'ER', 'NAR', 'OcR', 'SAR', 'WR'))
+       AND result.best > 0 AND result.average > 0  -- Exclude -1 and 0 values
+),
+best_records AS (
+    SELECT
+        eventId AS event_id,
+        MIN(best) AS best_single,
+        MIN(average) AS best_average
+    FROM Results
+    WHERE best > 0 AND average > 0  -- Exclude -1 and 0 values
+    GROUP BY eventId
+)
+SELECT
+    lr.regional_single_record AS regional_single_record,
+    lr.regional_average_record AS regional_average_record,
+    lr.single AS single,
+    lr.average AS average,
+    '[' || lr.person_name || '](https://www.worldcubeassociation.org/persons/' || lr.person_id || ')' AS person_link,
+    '[' || lr.competition_name || '](https://www.worldcubeassociation.org/competitions/' || lr.competition_name || '/results/by_person#' || lr.person_id || ') ' AS results_link,
+    lr.competition_date AS competition_date,
+    lr.event_id AS event_id,
+    lr.continent_name AS continent
+FROM latest_records lr
+JOIN best_records br ON br.event_id = lr.event_id
+WHERE (lr.single = br.best_single OR lr.average = br.best_average)
+ORDER BY lr.competition_date
+FETCH FIRST 30 ROWS ONLY;
