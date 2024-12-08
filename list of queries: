@@ -187,4 +187,21 @@ JOIN last_missing_event_result ON first_result.personId = last_missing_event_res
 ORDER BY days_to_complete_all_events ASC
 FETCH FIRST 40 ROWS ONLY;
 
-world_championship_records:
+most_4th_places:
+SELECT
+    subquery.fourth_places_count,
+    '[' || person.name || '](https://www.worldcubeassociation.org/persons/' || person.id || ')' AS person_link
+FROM (
+    SELECT
+        personId AS id,
+        COUNT(*) AS fourth_places_count
+    FROM Results
+    JOIN RoundTypes round_type ON round_type.id = Results.roundTypeId
+    WHERE round_type.final = 1
+      AND Results.pos = 4
+      AND Results.best > 0
+    GROUP BY personId
+) subquery
+JOIN Persons person ON person.id = subquery.id AND person.subId = 1
+ORDER BY subquery.fourth_places_count DESC
+FETCH FIRST 100 ROWS ONLY;
