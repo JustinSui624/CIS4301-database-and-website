@@ -400,3 +400,54 @@ SELECT
 FROM total_and_avg
 ORDER BY avg_of_100 ASC
 FETCH FIRST 100 ROWS ONLY;
+
+best_first_average (3x3x3 only);
+SELECT
+    event_id,
+    person_link,
+    average
+FROM (
+    SELECT
+        result.eventId AS event_id,
+        '[' || person.name || '](https://www.worldcubeassociation.org/persons/' || person.id || ')' AS person_link,
+        result.average,
+        competition.year,
+        competition.month,
+        competition.day,
+        ROW_NUMBER() OVER (PARTITION BY result.eventId, result.personId ORDER BY competition.year ASC, competition.month ASC, competition.day ASC) AS row_num
+    FROM Results result
+    JOIN Persons person ON person.id = result.personId AND person.subId = 1
+    JOIN Competitions competition ON competition.id = result.competitionId
+    JOIN RoundTypes round_type ON round_type.id = result.roundTypeId
+    WHERE result.average > 0  -- Ensure the average is positive
+    AND result.eventId IN ('333')
+)
+WHERE row_num = 1  -- Select only the first result for each person in each event
+ORDER BY event_id, average
+FETCH FIRST 100 ROWS ONLY;
+
+best_first_single (3x3x3 only);
+SELECT
+    event_id,
+    person_link,
+    best
+FROM (
+    SELECT
+        result.eventId AS event_id,
+        '[' || person.name || '](https://www.worldcubeassociation.org/persons/' || person.id || ')' AS person_link,
+        result.best,
+        competition.year,
+        competition.month,
+        competition.day,
+        ROW_NUMBER() OVER (PARTITION BY result.eventId, result.personId ORDER BY competition.year ASC, competition.month ASC, competition.day ASC) AS row_num
+    FROM Results result
+    JOIN Persons person ON person.id = result.personId AND person.subId = 1
+    JOIN Competitions competition ON competition.id = result.competitionId
+    JOIN RoundTypes round_type ON round_type.id = result.roundTypeId
+    WHERE result.best > 0  -- Ensure the average is positive
+    AND result.eventId IN ('333')
+)
+WHERE row_num = 1  -- Select only the first result for each person in each event
+ORDER BY event_id, best
+FETCH FIRST 100 ROWS ONLY;
+
