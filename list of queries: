@@ -251,3 +251,91 @@ FROM (
 ) visited_countries_by_person
 JOIN Persons person ON person.id = visited_countries_by_person.personId AND person.subId = 1
 ORDER BY visited_countries DESC;
+
+average_of_12 (3x3x3 only):
+WITH valid_results AS (
+  SELECT
+    person.name,
+    person.id,
+    result.eventId AS event_id,
+    result.value1,
+    result.value2,
+    result.value3,
+    result.value4,
+    result.value5
+  FROM Results result
+  JOIN Persons person ON person.id = result.personId AND person.subId = 1
+  JOIN Competitions competition ON competition.id = result.competitionId
+  JOIN RoundTypes round_type ON round_type.id = result.roundTypeId
+  JOIN RanksSingle ranks_single ON ranks_single.eventId = result.eventId AND ranks_single.personId = result.personId
+  WHERE ranks_single.worldRank <= 200
+    AND result.eventId IN ('333')
+),
+ordered_results AS (
+  SELECT
+    name,
+    id,
+    event_id,
+    value1, value2, value3, value4, value5,
+    ROW_NUMBER() OVER (PARTITION BY id, event_id ORDER BY value1) AS rn_1,
+    ROW_NUMBER() OVER (PARTITION BY id, event_id ORDER BY value2) AS rn_2,
+    ROW_NUMBER() OVER (PARTITION BY id, event_id ORDER BY value3) AS rn_3,
+    ROW_NUMBER() OVER (PARTITION BY id, event_id ORDER BY value4) AS rn_4,
+    ROW_NUMBER() OVER (PARTITION BY id, event_id ORDER BY value5) AS rn_5
+  FROM valid_results
+),
+trimmed_results AS (
+  SELECT
+    name,
+    id,
+    event_id,
+    -- Trim the first 3 and last 3 solves, and calculate the average of the remaining, excluding 0 and -1
+    AVG(val) AS ao12
+  FROM (
+    SELECT
+      name,
+      id,
+      event_id,
+      CASE WHEN rn_1 > 3 AND rn_1 <= 8 AND value1 > 0 AND value1 != -1 THEN value1 END AS val
+    FROM ordered_results
+    UNION ALL
+    SELECT
+      name,
+      id,
+      event_id,
+      CASE WHEN rn_2 > 3 AND rn_2 <= 8 AND value2 > 0 AND value2 != -1 THEN value2 END AS val
+    FROM ordered_results
+    UNION ALL
+    SELECT
+      name,
+      id,
+      event_id,
+      CASE WHEN rn_3 > 3 AND rn_3 <= 8 AND value3 > 0 AND value3 != -1 THEN value3 END AS val
+    FROM ordered_results
+    UNION ALL
+    SELECT
+      name,
+      id,
+      event_id,
+      CASE WHEN rn_4 > 3 AND rn_4 <= 8 AND value4 > 0 AND value4 != -1 THEN value4 END AS val
+    FROM ordered_results
+    UNION ALL
+    SELECT
+      name,
+      id,
+      event_id,
+      CASE WHEN rn_5 > 3 AND rn_5 <= 8 AND value5 > 0 AND value5 != -1 THEN value5 END AS val
+    FROM ordered_results
+  )
+  GROUP BY name, id, event_id
+)
+SELECT
+    '[' || name || '](https://www.worldcubeassociation.org/persons/' || id || ') AS person_link',
+    event_id,
+    ao12
+FROM trimmed_results
+ORDER BY ao12
+FETCH FIRST 100 ROWS ONLY;
+
+
+average_of_100 (3x3x3 only):
