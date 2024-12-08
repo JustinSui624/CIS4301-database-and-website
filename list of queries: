@@ -234,3 +234,20 @@ GROUP BY person.id, person.name
 ORDER BY total_solves_count DESC
 FETCH FIRST 100 ROWS ONLY;
 
+most_visited_countries:
+SELECT
+    visited_countries,
+    '[' || person.name || '](https://www.worldcubeassociation.org/persons/' || person.id || ')' AS person_link
+FROM (
+    SELECT
+        result.personId,
+        COUNT(DISTINCT competition.countryId) AS visited_countries
+    FROM Results result
+    JOIN Competitions competition ON competition.id = result.competitionId
+    WHERE competition.countryId NOT IN ('XA', 'XE', 'XF', 'XM', 'XN', 'XO', 'XS', 'XW') -- Exclude specific countries
+    GROUP BY result.personId
+    ORDER BY visited_countries DESC
+    FETCH FIRST 100 ROWS ONLY -- Limit the results to the top 100
+) visited_countries_by_person
+JOIN Persons person ON person.id = visited_countries_by_person.personId AND person.subId = 1
+ORDER BY visited_countries DESC;
