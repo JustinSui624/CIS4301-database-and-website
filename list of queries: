@@ -339,3 +339,64 @@ FETCH FIRST 100 ROWS ONLY;
 
 
 average_of_100 (3x3x3 only):
+WITH valid_results AS (
+  SELECT
+    person.name,
+    person.id,
+    result.eventId AS event_id,
+    result.value1,
+    result.value2,
+    result.value3,
+    result.value4,
+    result.value5
+  FROM Results result
+  JOIN Persons person ON person.id = result.personId AND person.subId = 1
+  JOIN Competitions competition ON competition.id = result.competitionId
+  JOIN RoundTypes round_type ON round_type.id = result.roundTypeId
+  JOIN RanksSingle ranks_single ON ranks_single.eventId = result.eventId AND ranks_single.personId = result.personId
+  WHERE ranks_single.worldRank <= 200
+    AND result.eventId IN ('333')
+),
+ordered_results AS (
+  SELECT
+    name,
+    id,
+    event_id,
+    value1, value2, value3, value4, value5,
+    ROW_NUMBER() OVER (PARTITION BY id, event_id ORDER BY value1) AS rn_1,
+    ROW_NUMBER() OVER (PARTITION BY id, event_id ORDER BY value2) AS rn_2,
+    ROW_NUMBER() OVER (PARTITION BY id, event_id ORDER BY value3) AS rn_3,
+    ROW_NUMBER() OVER (PARTITION BY id, event_id ORDER BY value4) AS rn_4,
+    ROW_NUMBER() OVER (PARTITION BY id, event_id ORDER BY value5) AS rn_5
+  FROM valid_results
+),
+trimmed_results AS (
+  SELECT
+    name,
+    id,
+    event_id,
+    value1, value2, value3, value4, value5
+  FROM ordered_results
+  WHERE (rn_1 <= 100 AND value1 > 0 AND value1 != -1)
+    OR (rn_2 <= 100 AND value2 > 0 AND value2 != -1)
+    OR (rn_3 <= 100 AND value3 > 0 AND value3 != -1)
+    OR (rn_4 <= 100 AND value4 > 0 AND value4 != -1)
+    OR (rn_5 <= 100 AND value5 > 0 AND value5 != -1)
+),
+total_and_avg AS (
+  SELECT
+    name,
+    id,
+    event_id,
+    SUM(value1 + value2 + value3 + value4 + value5)/5 AS total_solves,
+    COUNT(*) AS solve_count
+  FROM trimmed_results
+  GROUP BY name, id, event_id
+)
+SELECT
+    event_id,
+    '[' || name || '](https://www.worldcubeassociation.org/persons/' || id || ') AS person_link',
+    total_solves / solve_count AS avg_of_100
+FROM total_and_avg
+ORDER BY avg_of_100 ASC
+FETCH FIRST 100 ROWS ONLY;
